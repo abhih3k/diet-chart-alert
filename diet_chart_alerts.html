@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diet Chart with Alerts</title>
+</head>
+<body>
+  <h1>🥗 Diet Chart with Alerts</h1>
+  <p>Notifications and Vibration will remind you at meal times.</p>
+
+  <button onclick="requestPermission()">Enable Notifications</button>
+
+  <script>
+    // Permission Request
+    function requestPermission() {
+      if ("Notification" in window) {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            alert("Notifications enabled!");
+          }
+        });
+      } else {
+        alert("Notifications not supported in this browser.");
+      }
+    }
+
+    // Notify Function
+    function sendNotification(meal) {
+      if (Notification.permission === "granted") {
+        new Notification("🍴 Meal Reminder", {
+          body: "Time for " + meal,
+          icon: "https://img.icons8.com/color/96/meal.png"
+        });
+      }
+      // Vibrate if supported
+      if ("vibrate" in navigator) {
+        navigator.vibrate([200, 100, 200]); // pattern vibration
+      }
+    }
+
+    // Schedule Meals (example times)
+    const schedule = [
+      { time: "08:30", meal: "Breakfast" },
+      { time: "11:00", meal: "Snack" },
+      { time: "12:00", meal: "Lunch" },
+      { time: "16:30", meal: "Office Snack" },
+      { time: "21:00", meal: "Dinner" },
+      { time: "22:30", meal: "Fruit Bowl" }
+    ];
+
+    function checkTime() {
+      const now = new Date();
+      const current = now.getHours().toString().padStart(2, "0") + ":" +
+                      now.getMinutes().toString().padStart(2, "0");
+      schedule.forEach(item => {
+        if (item.time === current) {
+          sendNotification(item.meal);
+        }
+      });
+    }
+
+    // Check every minute
+    setInterval(checkTime, 60000);
+  </script>
+</body>
+</html>
